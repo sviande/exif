@@ -57,6 +57,7 @@ type Data struct {
 type ExifTag struct {
 	Name  string
 	Value interface{}
+	Title string
 }
 
 }
@@ -106,6 +107,7 @@ func (d *Data) parseExifData(exifData *C.ExifData) error {
 			tag := ExifTag{
 				Name:  strings.Trim(C.GoString((*value).name), " "),
 				Value: strings.Trim(C.GoString((*value).value), " "),
+				Title: strings.Trim(C.GoString((*value).title), " "),
 			}
 
 			d.Tags[tag.Name] = tag
