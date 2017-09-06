@@ -51,13 +51,20 @@ var (
 // Data stores the EXIF tags of a file.
 type Data struct {
 	exifLoader *C.ExifLoader
-	Tags       map[string]string
+	Tags       map[string]ExifTag
+}
+
+type ExifTag struct {
+	Name  string
+	Value interface{}
+}
+
 }
 
 // New creates and returns a new exif.Data object.
 func New() *Data {
 	data := &Data{
-		Tags: make(map[string]string),
+		Tags: make(map[string]ExifTag),
 	}
 	return data
 }
@@ -96,7 +103,12 @@ func (d *Data) parseExifData(exifData *C.ExifData) error {
 		if value == nil {
 			break
 		} else {
-			d.Tags[strings.Trim(C.GoString((*value).name), " ")] = strings.Trim(C.GoString((*value).value), " ")
+			tag := ExifTag{
+				Name:  strings.Trim(C.GoString((*value).name), " "),
+				Value: strings.Trim(C.GoString((*value).value), " "),
+			}
+
+			d.Tags[tag.Name] = tag
 		}
 		C.free_exif_value(value)
 	}
